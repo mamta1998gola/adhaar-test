@@ -34,6 +34,50 @@ function applySavedTheme() {
 //     return n ? n : 0;
 // }
 
+// Function to add a new user
+async function addUser(uid, name, matchScore) {
+    try {
+        const response = await fetch('/add_user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ uid, name, matchScore })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to add user');
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error adding user:', error);
+        throw error;
+    }
+}
+
+// Function to get users (optionally filtered by UID)
+async function getUsers(uid = null) {
+    try {
+        const url = uid ? `/get_users?uid=${uid}` : '/get_users';
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch users');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+    }
+}
+
+
 // Function to render data in the table
 function renderTableData(data) {
     const tableBody = document.querySelector('#matching-scores-table tbody');
@@ -69,6 +113,7 @@ function renderTableData(data) {
         tableBody.appendChild(row);
     });
     document.getElementById('data-analytics').style.display = 'block';
+    console.log(getUsers())
 }
 
 // Example response data
@@ -191,6 +236,9 @@ function handleFileUpload() {
 document.addEventListener("DOMContentLoaded", () => {
     applySavedTheme();
     handleFileUpload();
+    responseData.forEach(item => {
+        addUser(item.aadhaarNumber, item.name, item.matchScore)
+    })
 
     // Sidebar Toggle
     const sidebar = document.getElementById("sidebar");
