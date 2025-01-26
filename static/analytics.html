@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="close-btn" id="close-sidebar">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul>
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+        </ul>
+        <div class="user-info">
+            <img src="https://via.placeholder.com/50" alt="Avatar" class="avatar">
+            <span class="username">Prabhat Ranjan</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <button class="menu-btn" id="open-sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-content">
+            <h1>Analytics</h1>
+        </div>
+        <button id="theme-toggle" class="theme-toggle">
+            <i class="fas fa-moon"></i> Dark Mode
+        </button>
+    </header>
+
+    <!-- Analytics Content -->
+    <div class="dashboard-container">
+        <section class="analytics-section">
+            <h2>Aadhaar Data Analytics</h2>
+            <canvas id="analytics-chart"></canvas>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <p>&copy; 2025 Aadhaar Data Dashboard. All rights reserved.</p>
+    </footer>
+
+    <script src="dashboard.js"></script>
+    <script>
+        // Mock Data for Analytics
+        console.log("response-data: ", responseData)
+        const ctx = document.getElementById('analytics-chart').getContext('2d');
+        const analyticsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Total Aadhaar Data',
+                    data: [200, 300, 400, 350, 500, 450],
+                    backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                }, {
+                    label: 'Total Matches',
+                    data: [150, 250, 300, 280, 400, 380],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
