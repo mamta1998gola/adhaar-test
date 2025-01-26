@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
