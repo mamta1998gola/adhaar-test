@@ -30,41 +30,36 @@ def upload_files():
     zip_file = request.files['zip_file']
     excel_file = request.files['excel_file']
 
+    # Validate file extensions
+    if not allowed_file(zip_file.filename) or not allowed_file(excel_file.filename):
+        return jsonify({"error": "Invalid file format! Allowed formats are ZIP and XLSX."}), 400
+
     # Secure filenames and save files
-    zip_path = os.path.join(app.config['UPLOAD_FOLDER'], zip_file.filename)
-    excel_path = os.path.join(app.config['UPLOAD_FOLDER'], excel_file.filename)
+    zip_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(zip_file.filename))
+    excel_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(excel_file.filename))
 
     zip_file.save(zip_path)
     excel_file.save(excel_path)
 
     # Process ZIP file
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], 'extracted_zip'))
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], 'extracted_zip'))
+    except zipfile.BadZipFile:
+        return jsonify({"error": "Invalid ZIP file!"}), 400
 
     # Process Excel file
-    excel_data = pd.read_excel(excel_path)
+    try:
+        excel_data = pd.read_excel(excel_path)
+    except Exception as e:
+        return jsonify({"error": f"Error processing Excel file: {str(e)}"}), 500
+
+    # Cleanup uploaded files
+    os.remove(zip_path)
+    os.remove(excel_path)
 
     return jsonify({"message": "Files uploaded successfully", "excel_data_preview": excel_data.head().to_dict()}), 200
 
-
-def handle_zip(zip_path):
-    contents = []
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(UPLOAD_FOLDER)
-        for file_name in zip_ref.namelist():
-            contents.append(file_name)
-
-    os.remove(zip_path)
-    return jsonify({"message": "Zip file processed", "contents": contents})
-
-def handle_excel(excel_path):
-    try:
-        df = pd.read_excel(excel_path)
-        contents = df.to_dict(orient='records')
-        os.remove(excel_path)
-        return jsonify({"message": "Excel file processed", "contents": contents})
-    except Exception as e:
-        return jsonify({"error": f"Failed to process Excel file: {e}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
